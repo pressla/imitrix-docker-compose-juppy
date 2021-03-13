@@ -1,0 +1,47 @@
+version: '3'
+
+networks:
+  backend:
+    ipam:
+      config:
+        - subnet: 172.42.0.0/24
+
+services:
+
+  desk: 
+    image: 'docker.io/imitrix/desk'
+    container_name: 'desk1'
+    volumes:
+      - 'd:/git/imitrix-docker-compose-juppy:/root/nb'
+    networks:
+      backend:
+        ipv4_address: 172.42.0.100
+    command: tail -f /dev/null
+
+  jupyter:
+    image: 'imitrix/jupyter-scipy:latest'
+    container_name: 'jupyter1'
+    
+    restart: unless-stopped
+    networks:
+      backend:
+        ipv4_address: 172.42.0.110
+    ports:
+      - '8050:8050'
+      - '8787:8787'
+      - '7800:8888'
+    environment:
+      - NB_UID=1234
+      - NB_GID=1234
+      - JUPYTER_ENABLE_LAB=yes
+    volumes:
+      - 'd:/git/imitrix-docker-compose-juppy:/home/jovyan/work'
+      - 'd:/git/imitrix-docker-compose-juppy:/home/joyan/desk'
+    networks:
+      backend:
+        ipv4_address: 172.42.0.99    
+    #command: tail -f /dev/null
+
+volumes:
+  desk_data:
+
